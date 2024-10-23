@@ -1,0 +1,19 @@
+# Path to the input data file containing customer data
+input_data_path: /home/giangnmt/Vnpt_AI/data_for_processing/customers.csv
+
+# Path where the filtered output data will be saved
+output_data_path: /home/giangnmt/Vnpt_AI/data_for_processingh/output.csv
+
+# List of fields/columns to be extracted from the CSV file
+fields:
+  - customer_id: int
+  - first_name: str
+  - last_name: str
+  - phone: str
+  - email: str
+  - city: str
+  - state: str
+
+# Filtering criteria for data extraction
+filters:
+  state: NY

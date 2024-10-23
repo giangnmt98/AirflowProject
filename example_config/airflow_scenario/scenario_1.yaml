@@ -1,0 +1,25 @@
+data_processing:
+  schedule_interval: "@daily"
+  execution_time:
+  params:
+    module_config_path: "/home/giangnmt/Vnpt_AI/AirflowProject/example_config/packgage_config/data_processing_package_config.yaml"
+    task_failure_callback:
+      notify:
+        TELEGRAM_CHAT_ID: "-4569060205"
+        TELEGRAM_TOKEN: "7897102108:AAEm888B6NUD4zRvlNfmvSCzNC94955cevg"
+      retry_task:
+        retries: 2
+        retry_delay: 30
+
+extract_feature:
+  schedule_interval: "@daily"
+  execution_time:
+  params:
+    module_config_path: "/home/giangnmt/Vnpt_AI/AirflowProject/example_config/packgage_config/extract_feature_package_config.yaml"
+    task_failure_callback:
+      notify:
+        TELEGRAM_CHAT_ID: "-4569060205"
+        TELEGRAM_TOKEN: "7897102108:AAEm888B6NUD4zRvlNfmvSCzNC94955cevg"
+      retry_task:
+        retries: 2
+        retry_delay: 30

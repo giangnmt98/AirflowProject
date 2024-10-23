@@ -1,0 +1,12 @@
+extract_feature:
+  schedule_interval:
+  execution_time: "16:05"
+  params:
+    module_config_path: "/home/giangnmt/extract_feature.yaml"
+    task_failure_callback:
+      notify:
+        TELEGRAM_CHAT_ID: "-4569060205"
+        TELEGRAM_TOKEN: "7897102108:AAEm888B6NUD4zRvlNfmvSCzNC94955cevg"
+      retry_task:
+        retries: 2
+        retry_delay: 30
