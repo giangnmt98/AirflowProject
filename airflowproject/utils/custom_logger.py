@@ -21,7 +21,7 @@ class CustomLogger:
         logger (logging.Logger): The main logger instance used to log messages.
     """
 
-    def __init__(self, name, log_file=False, level=logging.INFO):
+    def __init__(self, name, log_file=False, level=logging.INFO, debug=False):
         """
         Initialize the CustomLogger instance.
 
@@ -33,21 +33,30 @@ class CustomLogger:
         """
         self.logger = logging.getLogger(name)
         self.logger.setLevel(level)
+        self.debug = debug
 
         # Ensure no repeated handlers
         if not self.logger.hasHandlers():
             # Log formatting with detailed information and colors
-            formatter = colorlog.ColoredFormatter(
-                "%(log_color)s%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-                " - [in %(filename)s:%(lineno)d | %(funcName)s()]",
-                log_colors={
-                    "DEBUG": "cyan",
-                    "INFO": "green",
-                    "WARNING": "yellow",
-                    "ERROR": "red",
-                    "CRITICAL": "bold_red",
-                },
-            )
+            log_colors = {
+                "DEBUG": "cyan",
+                "INFO": "green",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "bold_red",
+            }
+            if self.debug:
+                formatter = colorlog.ColoredFormatter(
+                    "%(log_color)s%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                    " - [in %(filename)s:%(lineno)d | %(funcName)s()]",
+                    log_colors=log_colors,
+                )
+            else:
+                formatter = colorlog.ColoredFormatter(
+                    "%(log_color)s%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                    log_colors=log_colors,
+                )
+            # Handler to log to console
             # Handler to log to console
             console_handler = logging.StreamHandler()
             console_handler.setFormatter(formatter)
