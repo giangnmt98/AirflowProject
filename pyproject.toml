@@ -14,7 +14,8 @@ authors = [
 dependencies = [
     "apache-airflow==2.10.2",
     "pymysql==1.1.1",
-    "types-pytz"
+    "types-pytz",
+    "pyTelegramBotAPI==4.23.0"
     # Add other dependencies from requirements.txt
 ]
 

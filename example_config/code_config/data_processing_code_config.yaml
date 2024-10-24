@@ -2,7 +2,7 @@
 input_data_path: /home/giangnmt/Vnpt_AI/data_for_processing/customers.csv
 
 # Path where the filtered output data will be saved
-output_data_path: /home/giangnmt/Vnpt_AI/data_for_processingh/output.csv
+output_data_path: /home/giangnmt/Vnpt_AI/data_for_processing/output.csv
 
 # List of fields/columns to be extracted from the CSV file
 fields:

@@ -2,7 +2,7 @@ data_processing:
   schedule_interval: "@daily"
   execution_time:
   params:
-    module_config_path: "/home/giangnmt/Vnpt_AI/AirflowProject/example_config/packgage_config/data_processing_package_config.yaml"
+    module_config_path: "/home/giangnmt/AirflowProject/example_config/packgage_config/data_processing_package_config.yaml"
     task_failure_callback:
       notify:
         TELEGRAM_CHAT_ID: "-4569060205"
@@ -15,7 +15,7 @@ extract_feature:
   schedule_interval: "@daily"
   execution_time:
   params:
-    module_config_path: "/home/giangnmt/Vnpt_AI/AirflowProject/example_config/packgage_config/extract_feature_package_config.yaml"
+    module_config_path: "/home/giangnmt/AirflowProject/example_config/packgage_config/extract_feature_package_config.yaml"
     task_failure_callback:
       notify:
         TELEGRAM_CHAT_ID: "-4569060205"

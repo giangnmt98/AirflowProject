@@ -1,6 +1,0 @@
-PACKAGE_NAME: "extractfeature"
-CONFIG_PATH: "/home/giangnmt/Vnpt_AI/AirflowProject/example_config/packgage_config/extract_feature_code_config.yaml"
-VENV_HUB_PATH: "/home/giangnmt/VENV/"
-RAW_REPO_URL: "git@github_extractfeature_host:giangnmt98/ExtractFeature.git"
-PACKAGE_VERSION: "v1.0"
-PYTHON_VERSION: "3.10"
