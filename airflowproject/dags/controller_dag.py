@@ -86,6 +86,7 @@ def load_dag_configuration(**context):
         config_file_path = Variable.get(CONFIG_FILE_PATH_PARAM)
     # Load the YAML configuration
     with open(config_file_path, "r") as file:
+        print(config_file_path)
         dag_info = yaml.safe_load(file)
     # Return the DAG configuration to be available via XCom
     return dag_info

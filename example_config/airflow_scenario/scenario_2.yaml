@@ -1,8 +1,8 @@
 extract_feature:
   schedule_interval:
-  execution_time: "16:05"
+  execution_time:
   params:
-    module_config_path: "/home/giangnmt/extract_feature.yaml"
+    package_config_path: "/home/giangnmt/extract_feature.yaml"
     task_failure_callback:
       notify:
         TELEGRAM_CHAT_ID: "-4569060205"
