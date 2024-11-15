@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Generate an SSH key and update the SSH config for a given project name.
+
 # Constants for frequently used paths
 SSH_DIR="$HOME/.ssh"
 SSH_CONFIG_FILE="$SSH_DIR/config"

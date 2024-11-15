@@ -6,7 +6,7 @@ OUTPUT_FILE=""
 
 # Function to display usage
 usage() {
-    echo "Usage: $0 --dag_id <dag_id> --file_path <output_python_file>"
+    echo "Usage: $0 --dag_id <dag_id> --file_path <output_python_file_define_dag (must be in the dags folder)>"
     exit 1
 }
 
