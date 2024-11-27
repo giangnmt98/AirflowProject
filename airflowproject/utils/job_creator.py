@@ -13,16 +13,17 @@ class JobCreator:
     A class to create and manage job execution environments using bash scripts.
     """
 
-    def __init__(self, config_path: str):
+    def __init__(self, config):
         """
         Initialize the PackageSetup class with the given configuration path.
 
         Args:
-            config_path (str): Path to the YAML configuration file.
+            config: Job config
         """
-        self.config_path = config_path
-        self.config = load_yaml_config(config_path)
+        self.config = config
+        print(config)
         self.repo_url = self._construct_repo_url()
+        print(self.repo_url)
         self.venv_name = self._construct_venv_name()
         self.full_venv_path = self._construct_full_venv_path()
         self.repo_dir = self._construct_repo_dir()
@@ -113,9 +114,9 @@ class JobCreator:
     # Step 1: Get the package from the git repository
     echo -e "${{YELLOW}}Cloning repository...${{NC}}"
     git clone --branch {self.config['PACKAGE_VERSION']} --depth 1 \\
-        {self.repo_url} > /dev/null 2>&1 || \\
-        log_error "Failed to clone repository from '{self.repo_url}'\
-        with tag '{self.config['PACKAGE_VERSION']}'.\
+        {self.repo_url} > /dev/null 2>&1 || 
+        log_error "
+        Failed to clone repository from '{self.repo_url}' with tag '{self.config['PACKAGE_VERSION']}'. 
         Check the repository URL and network."
 
     cd {self.repo_dir} || \\

@@ -161,7 +161,7 @@ def submit_job(**context) -> None:
     sh_logger.info("Starting script execution...")
 
     # Set up and execute subprocess
-    job_creator = JobCreator(dag_run_conf.get("package_config_path"))
+    job_creator = JobCreator(dag_run_conf.get("package"))
     bash_script = job_creator.generate_bash_script()
 
     try:

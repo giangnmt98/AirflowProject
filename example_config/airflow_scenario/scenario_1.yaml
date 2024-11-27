@@ -4,8 +4,13 @@ data_processing:
   # Placeholder for execution time (could be extended with actual time)
   execution_time:
   params:
-    # Path to the package configuration file for data processing
-    package_config_path: "/home/giangnmt/AirflowProject/example_config/packgage_config/data_processing_package_config.yaml"
+    package:
+      PACKAGE_NAME: "dataprocessor"
+      CONFIG_PATH: "/home/giangnmt/AirflowProject/example_config/code_config/data_processing_code_config.yaml"
+      VENV_HUB_PATH: "/home/giangnmt/VENV/"
+      RAW_REPO_URL: "git@github_dataprocessing_host:giangnmt98/DataProcessing.git"
+      PACKAGE_VERSION: "v1.0"
+      PYTHON_VERSION: "3.10"
     task_failure_callback:
       # Nested configuration for failure callbacks
       notify:
@@ -23,7 +28,13 @@ extract_feature:
   schedule_interval: "@daily"
   execution_time:
   params:
-    package_config_path: "/home/giangnmt/AirflowProject/example_config/packgage_config/extract_feature_package_config.yaml"
+    package:
+      PACKAGE_NAME: "extractfeature"
+      CONFIG_PATH: "/home/giangnmt/AirflowProject/example_config/code_config/extract_feature_code_config.yaml"
+      VENV_HUB_PATH: "/home/giangnmt/VENV/"
+      RAW_REPO_URL: "git@github_extractfeature_host:giangnmt98/ExtractFeature.git"
+      PACKAGE_VERSION: "v1.0"
+      PYTHON_VERSION: "3.10"
     task_failure_callback:
       notify:
         TELEGRAM_CHAT_ID: "-4569060205"
