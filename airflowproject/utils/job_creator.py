@@ -149,18 +149,17 @@ class JobCreator:
 
     # Install project dependencies
     echo -e "${{YELLOW}}Installing project dependencies...${{NC}}"
-    python3 -m pip install -q -e . || \\
-        log_error "Failed to install the package dependencies. Check 'setup.py' \\
+    python3 -m pip install --extra-index-url https://pypi.nvidia.com -q -e . || \\
+        log_error "Failed to install the package dependencies. Check 'pyproject.toml' \\
         or 'requirements.txt' for missing dependencies or errors."
     separator
 
     # Step 3: Run the package
     echo -e "${{YELLOW}}Running the package...${{NC}}"
     ls
-    python3 "main.py" --config_path \\
-        "{self.config['CONFIG_PATH']}" || \\
+    python3 "main.py" || \\
         log_error "Failed to run the package '{self.config['PACKAGE_NAME']}'. \\
-        Verify the config file at '{self.config['CONFIG_PATH']}'."
+        "
     separator
 
     # Completion message

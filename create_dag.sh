@@ -54,7 +54,7 @@ with DAG(
 ) as dag:
     # Define the task with clear structure
     ${package_name}_task = PythonOperator(
-        task_id="data_processing_task",
+        task_id="${package_name}_task",
         python_callable=submit_job,
         on_failure_callback=handle_failure_task,
     )
