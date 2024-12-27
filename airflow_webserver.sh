@@ -1,4 +1,8 @@
 #!/bin/bash
+. airflowproject_env/bin/activate
+chmod +x set_env_variables.sh
+./set_env_variables.sh
+
 # Set the database username for MYSQL Database
 export MYSQL_USER=root
 # Set the database password for MYSQL Database

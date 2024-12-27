@@ -156,10 +156,15 @@ class JobCreator:
 
     # Step 3: Run the package
     echo -e "${{YELLOW}}Running the package...${{NC}}"
-    ls
-    python3 "main.py" || \\
-        log_error "Failed to run the package '{self.config['PACKAGE_NAME']}'. \\
-        "
+    config_path="{self.config['CONFIG_PATH']}"
+
+    if [ -z "$config_path" ] || [ "$config_path" = "None" ]; then
+        python3 "main.py" || \
+        log_error "Failed to run the package '{self.config['PACKAGE_NAME']}'."
+    else
+        python3 "main.py" --config_path "$config_path" || \
+        log_error "Failed to run the package '{self.config['PACKAGE_NAME']}'."
+    fi
     separator
 
     # Completion message

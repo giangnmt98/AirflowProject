@@ -28,4 +28,6 @@ class ScheduleConfig:
     This inner class holds scheduling configurations with more readable names.
     """
 
-    CONTROLLER_DAG_SCHEDULE = "0 8 * * *"  # Transform data at 8:00 AM daily
+    # CONTROLLER_DAG_SCHEDULE = "0 8 * * *"  # Transform data at 8:00 AM daily
+    CONTROLLER_DAG_SCHEDULE = None
+

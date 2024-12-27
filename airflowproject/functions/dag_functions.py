@@ -163,7 +163,15 @@ def submit_job(**context) -> None:
     # Set up and execute subprocess
     job_creator = JobCreator(dag_run_conf.get("package"))
     bash_script = job_creator.generate_bash_script()
-
+    try:
+        # Save the script to a temporary file and log its path
+        tmp_file_path = job_creator.save_script_to_tmp_file(
+            script_content=bash_script, dir_path=log_dir
+        )
+        sh_logger.info("Bash script saved to: %s", tmp_file_path)
+    except IOError as e:
+        # Log an error if there is an issue saving the script
+        sh_logger.error("Error: %s", e)
     try:
         with subprocess.Popen(
             bash_script,
@@ -185,12 +193,4 @@ def submit_job(**context) -> None:
     except IOError as e:
         sh_logger.error("IOError: $%s", e)
         raise
-    try:
-        # Save the script to a temporary file and log its path
-        tmp_file_path = job_creator.save_script_to_tmp_file(
-            script_content=bash_script, dir_path=log_dir
-        )
-        sh_logger.info("Bash script saved to: %s", tmp_file_path)
-    except IOError as e:
-        # Log an error if there is an issue saving the script
-        sh_logger.error("Error: %s", e)
+
