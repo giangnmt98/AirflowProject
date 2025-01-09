@@ -1,12 +1,11 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-
 from airflowproject.configs import conf
 from airflowproject.functions.dag_functions import submit_job
 from airflowproject.functions.task_failure_callback import handle_failure_task
 
 # Define DAG configurations and metadata
-dag_id = "data_processing"
+dag_id = "recmodel_dag"
 default_args = conf.RuntimeConfig.DEFAULT_ARGS
 schedule_interval = None
 catchup = False  # Prevent running missed executions
@@ -19,8 +18,8 @@ with DAG(
     catchup=catchup,
 ) as dag:
     # Define the task with clear structure
-    extract_feature_task = PythonOperator(
-        task_id="data_processing_task",
+    test_recs_model_task = PythonOperator(
+        task_id="test_recs_model_task",
         python_callable=submit_job,
         on_failure_callback=handle_failure_task,
     )

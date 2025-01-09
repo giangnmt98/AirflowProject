@@ -7,8 +7,9 @@ recmodel_dag:
       CONFIG_PATH:
       VENV_HUB_PATH: "/home/giang/VENV/"
       RAW_REPO_URL: "git@github-test-mytv-recsys:giangnmt98/test_recs_model.git"
-      PACKAGE_VERSION: "v1.0.0"
+      PACKAGE_VERSION: "v1.0"
       PYTHON_VERSION: "3.9"
+      CUDA_VISIBLE_DEVICES: "0"
     task_failure_callback:
       notify:
         TELEGRAM_CHAT_ID: "-4569060205"

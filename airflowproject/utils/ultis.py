@@ -25,8 +25,9 @@ def send_tele_message(api_token, group_id, message):
     logger.info("Sending message to Telegram...")
     bot = telebot.TeleBot(api_token)
     try:
-        bot.send_message(group_id, message, parse_mode="HTML")
-        logger.info("Message sent successfully!")
+        if len(str(message)) > 0:
+            bot.send_message(group_id, message, parse_mode="HTML")
+            logger.info("Message sent successfully!")
     except ApiException as e:
         bot.send_message(group_id, message)
         logger.error("Failed to send message: %s", e)

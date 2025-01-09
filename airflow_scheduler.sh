@@ -19,5 +19,9 @@ export MYSQL_AIRFLOW_DATABASE=airflowdb
 export AIRFLOW_HOME=./airflowproject
 # Set the configuration file path for the custom app
 export AIRFLOW_CONFIG=$AIRFLOW_HOME/configs/airflow.cfg
+
+export REDIS_PASSWORD=DsteamIC2024
+
 # Run Airflow scheduler
 airflow scheduler
+

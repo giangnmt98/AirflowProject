@@ -1,3 +1,21 @@
+#!/bin/bash
+
+# Check if a DAG name argument is provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <dag_id> [output_dir]"
+  exit 1
+fi
+
+DAG_ID=$1
+DAG_ID="${DAG_ID}_dag"
+OUTPUT_DIR=${2:-"./dags"}  # Default to ./dags if not provided
+FILE_NAME="${DAG_ID}.py"
+
+# Create the output directory if it doesn't exist
+mkdir -p $OUTPUT_DIR
+
+# Create the Python file with the specified DAG ID
+cat << EOF > $OUTPUT_DIR/$FILE_NAME
 """
 This module defines a controller DAG for triggering other DAGs dynamically
 based on a configuration file provided at runtime. The DAG's configuration
@@ -28,7 +46,6 @@ SCHEDULE_INTERVAL_NONE = None
 MAX_ACTIVE_RUNS = 1
 CATCHUP = False
 
-
 @task
 def save_dag_run_config(**context):
     """
@@ -54,7 +71,6 @@ def save_dag_run_config(**context):
         # Push the config path to XCom for downstream tasks
         ti = context["ti"]
         ti.xcom_push(key=CONFIG_FILE_PATH_PARAM, value=config_file_path)
-
 
 @task
 def load_dag_configuration(**context):
@@ -90,7 +106,6 @@ def load_dag_configuration(**context):
         dag_info = yaml.safe_load(file)
     # Return the DAG configuration to be available via XCom
     return dag_info
-
 
 @task
 def trigger_dag_tasks(**context):
@@ -157,12 +172,10 @@ def trigger_dag_tasks(**context):
     if failed_dags:
         raise Exception(f"The following DAGs failed: {', '.join(failed_dags)}")
 
-
-
 # DAG Definition
 
 with DAG(
-    dag_id="controller_dag",
+    dag_id="$DAG_ID",
     schedule_interval=conf.ScheduleConfig.CONTROLLER_DAG_SCHEDULE,
     start_date=days_ago(1),
     catchup=False,
@@ -179,3 +192,7 @@ with DAG(
     trigger_tasks_task = trigger_dag_tasks()
     # Define dependencies
     start_task >> save_config_task >> load_config_task >> trigger_tasks_task
+EOF
+
+# Notify the user
+echo "DAG code generated and saved to $OUTPUT_DIR/$FILE_NAME"

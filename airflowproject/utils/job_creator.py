@@ -153,20 +153,19 @@ class JobCreator:
         log_error "Failed to install the package dependencies. Check 'pyproject.toml' \\
         or 'requirements.txt' for missing dependencies or errors."
     separator
-
+    
     # Step 3: Run the package
     echo -e "${{YELLOW}}Running the package...${{NC}}"
     config_path="{self.config['CONFIG_PATH']}"
 
     if [ -z "$config_path" ] || [ "$config_path" = "None" ]; then
-        python3 "main.py" || \
+        CUDA_VISIBLE_DEVICES="{self.config['CUDA_VISIBLE_DEVICES']}" python3 main.py  || \
         log_error "Failed to run the package '{self.config['PACKAGE_NAME']}'."
     else
-        python3 "main.py" --config_path "$config_path" || \
+        CUDA_VISIBLE_DEVICES="{self.config['CUDA_VISIBLE_DEVICES']}" python3 main.py --config_path "$config_path" || \
         log_error "Failed to run the package '{self.config['PACKAGE_NAME']}'."
     fi
     separator
-
     # Completion message
     echo -e "${{GREEN}}Script execution completed successfully.${{NC}}"
     separator
