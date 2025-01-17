@@ -5,13 +5,13 @@ COLOR_YELLOW="\033[1;33m"  # Yellow for informational text
 COLOR_RED="\033[1;31m"     # Red for errors or warnings
 COLOR_GREEN="\033[1;32m"   # Green for successes or highlights
 COLOR_RESET="\033[0m"      # Reset to default terminal color
-
+COLOR_BLUE="\033[1;34m"    # Blue for notices or specific highlights
 # Separator for consistent formatting
 SEPARATOR="========================================"
 
 # === Hiển thị hướng dẫn sử dụng nếu thiếu argument ===
 usage() {
-    echo -e "${COLOR_YELLOW}Usage:${COLOR_RESET} $0 --repo-owner <owner> --repo-url <repository_url> --token <github_token> --read-only|--push-key [--key-path <key_path>]"
+    echo -e "${COLOR_YELLOW}Usage:${COLOR_RESET} $0 --repo-owner <owner> --repo-url <repository_url> --token <github_token> --can-write|--push-key [--key-path <key_path>]"
     echo
     echo -e "${COLOR_GREEN}Arguments:${COLOR_RESET}"
     echo -e "${COLOR_YELLOW}  --repo-owner${COLOR_RESET}     Tên chủ sở hữu (user hoặc tổ chức trên GitHub)."
@@ -20,7 +20,7 @@ usage() {
     echo -e "${COLOR_YELLOW}  --can-write${COLOR_RESET}      (Required) Đối với Deploy Key giới hạn quyền đọc."
     echo -e "${COLOR_YELLOW}  --push-key${COLOR_RESET}       (Required) Sử dụng Deploy Key để đẩy code lên (quyền ghi)."
     echo -e "${COLOR_YELLOW}  --key-path${COLOR_RESET}       (Optional) Đường dẫn lưu Deploy Key (không chứa phần mở rộng)."
-    echo -e "                     Nếu không khai báo, Deploy Key mặc định lưu tại ~/.ssh/<repo-name>."
+    echo -e "                   Nếu không khai báo, Deploy Key mặc định lưu tại ~/.ssh/<repo-name>."
     echo
     exit 1
 }
@@ -54,7 +54,7 @@ if [[ -z "$REPO_OWNER" || -z "$REPO_URL" || -z "$GITHUB_TOKEN" ]]; then
     usage
 fi
 
-# Xác nhận ít nhất một trong các flag --read-only hoặc --push-key được sử dụng
+# Xác nhận ít nhất một trong các flag --can-write hoặc --push-key được sử dụng
 if [[ "$CAN_WRITE" == false && "$PUSH_KEY" == false ]]; then
     echo -e "${COLOR_RED}Error:${COLOR_RESET} You must specify either '--can-write' or '--push-key'."
     usage
@@ -83,7 +83,7 @@ echo -e "${COLOR_GREEN}Public Key đã được tạo:${COLOR_RESET}"
 echo -e "${DEPLOY_KEY}"
 
 # === Đẩy Deploy Key lên GitHub nếu có `--push-key` ===
-if [[ "$PUSH_KEY" == true ]]; then
+if [[ "$PUSH_KEY" == True ]]; then
     echo -e "${COLOR_YELLOW}Thêm Deploy Key có quyền ghi vào GitHub repository (${REPO_OWNER}/${REPO_NAME})...${COLOR_RESET}"
 else
     echo -e "${COLOR_YELLOW}Thêm Deploy Key (chỉ quyền đọc) vào GitHub repository (${REPO_OWNER}/${REPO_NAME})...${COLOR_RESET}"
@@ -92,7 +92,7 @@ fi
 API_URL="https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/keys"
 
 # Determine READ_ONLY value based on CAN_WRITE
-if [[ "$CAN_WRITE" == "true" ]]; then
+if [[ "$CAN_WRITE" == "True" ]]; then
     READ_ONLY="false"
 else
     READ_ONLY="true"
@@ -156,4 +156,5 @@ ssh-add "${DEPLOY_KEY_PATH}"
 
 # Completion message
 echo -e "${COLOR_GREEN}Deploy Key đã được thêm vào SSH Agent, có thể kiểm tra bằng lệnh 'ssh-add -l'.${COLOR_RESET}"
-echo -e "${COLOR_GREEN}Bây giờ đã có thể clone hoặc pull repository của mình bằng Deploy Key.${COLOR_RESET}"
+echo -e "${COLOR_GREEN}Bây giờ đã có thể clone hoặc pull repository của mình bằng Deploy Key!${COLOR_RESET}"
+echo -e "${COLOR_YELLOW}Thực thi lệnh sau để clone repository: git clone git@github.com-${REPO_NAME}:${REPO_OWNER}/${REPO_NAME}.git${COLOR_RESET}"

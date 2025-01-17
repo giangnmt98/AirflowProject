@@ -193,4 +193,3 @@ def submit_job(**context) -> None:
     except IOError as e:
         sh_logger.error("IOError: $%s", e)
         raise
-

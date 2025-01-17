@@ -30,9 +30,11 @@ style:
 	flake8 ./$(CODE_DIRECTORY)
 	# Sorts the imports using isort
 	isort -rc ./$(CODE_DIRECTORY)
+	pylint ./$(CODE_DIRECTORY)
 
 test:
 	# Run script check before commit
-	./run_check_before_commit.sh check_change_line
+	chmod +x run_check.sh
+	./run_check.sh check_change_line
 
 .PHONY: venv style test

@@ -2,13 +2,13 @@
 
 # Initialize variables
 DAG_ID=""
-OUTPUT_FILE=""
+FILE_PATH=""
 GIT_URL=""
 
 # Function to display usage
 usage() {
-    echo "Usage: $0 --dag_id <dag_id> --file_path <output_python_file_define_dag (must be in the dags folder)> --git_url <url>"
-    echo "Example: $0 --dag_id example_dag --file_path /path/to/dags/example_dag.py --git_url https://github.com/username/repo.git"
+    echo "Usage: $0 --dag_id <dag_id> --file_path <output_folder_path> --git_url <url>"
+    echo "Example: $0 --dag_id example_dag --file_path /path/to/dags --git_url https://github.com/username/repo.git"
     exit 1
 }
 
@@ -16,22 +16,31 @@ usage() {
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --dag_id) DAG_ID="$2"; shift ;;
-        --file_path) OUTPUT_FILE="$2"; shift ;;
+        --file_path) FILE_PATH="$2"; shift ;;
         --git_url) GIT_URL="$2"; shift ;;
-        *) echo "Unknown parameter passed: $1"; usage ;;
+        *) echo "Unknown parameter passed: $1"; usage ;; # Catch invalid parameters
     esac
     shift
 done
 
-# Check if all arguments are provided
-if [ -z "$DAG_ID" ] || [ -z "$OUTPUT_FILE" ] || [ -z "$GIT_URL" ]; then
+# Check if all required arguments are provided
+if [ -z "$DAG_ID" ] || [ -z "$FILE_PATH" ] || [ -z "$GIT_URL" ]; then
     usage
 fi
+
+# Ensure the FILE_PATH exists
+if [ ! -d "$FILE_PATH" ]; then
+    echo "Error: The specified file_path '$FILE_PATH' does not exist or is not a directory."
+    exit 1
+fi
+
+# Calculate the OUTPUT_FILE
+OUTPUT_FILE="${FILE_PATH}/${DAG_ID}_dag.py"
 
 # Extract package name from Git URL
 package_name=$(basename -s .git "$GIT_URL")
 
-# Create the Python file content with the provided DAG ID
+# Generate the content of the DAG file
 cat <<EOL > "$OUTPUT_FILE"
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -60,4 +69,10 @@ with DAG(
     )
 EOL
 
-echo "DAG file ${OUTPUT_FILE} created successfully with dag_id ${DAG_ID}"
+# Check if the DAG file was created successfully
+if [ $? -eq 0 ]; then
+    echo "DAG file ${OUTPUT_FILE} created successfully with dag_id ${DAG_ID}"
+else
+    echo "Failed to create DAG file ${OUTPUT_FILE}"
+    exit 1
+fi

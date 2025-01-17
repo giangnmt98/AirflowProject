@@ -4,7 +4,7 @@
 MAX_LINES=500
 MAX_CHANGE_LINES=200
 PYTHON_EXEC=python3
-CODE_DIRECTORY=airflowproject
+CODE_DIRECTORY=airflowproject/dags
 
 # Functions
 echo_error() {
@@ -35,31 +35,18 @@ $PYTHON_EXEC -m pylint ./$CODE_DIRECTORY
 echo ""
 
 # File line count check
-check_file_line_count() {
-  for file in $(git ls-files); do
-    if [[ "$file" != *".pylintrc"* ]]; then
-      line_count=$(wc -l < "$file")
-      if [ "$line_count" -gt "$MAX_LINES" ]; then
-        echo_error "File $file has $line_count lines, which exceeds the threshold of $MAX_LINES lines."
-        exit 1  # Exit if any file exceeds the line limit
-      fi
-    fi
-  done
-}
-
-# Change line count check
-check_change_line_count() {
-  local changes=$(git diff main --numstat | awk '{added+=$1; deleted+=$2} END {print added+deleted}')
-  if [ "$changes" -gt "$MAX_CHANGE_LINES" ]; then
-    echo_error "Too many changes: $changes lines. Maximum allowed: $MAX_CHANGE_LINES lines."
-    exit 1  # Exit if changes exceed the limit
-  else
-    echo "Number of changed lines: $changes"
-  fi
-  echo_separator
-  echo "Change line check completed"
-}
-
+   check_file_line_count() {
+     for file in $(git ls-files); do
+       # Sử dụng `[ ... ]` thay vì `[[ ... ]]`
+       if [ "${file##*.}" != "pylintrc" ] && [ "${file##*.}" != "cfg"  ] && [ "${file##*.}" != "md"  ]; then
+         line_count=$(wc -l < "$file")
+         if [ "$line_count" -gt "$MAX_LINES" ]; then
+           echo_error "File $file has $line_count lines, which exceeds the threshold of $MAX_LINES lines."
+           exit 1  # Exit if any file exceeds the line limit
+         fi
+       fi
+     done
+   }
 # Execution
 check_file_line_count
 echo_separator

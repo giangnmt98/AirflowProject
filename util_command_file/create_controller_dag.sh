@@ -1,14 +1,39 @@
 #!/bin/bash
 
-# Check if a DAG name argument is provided
-if [ -z "$1" ]; then
-  echo "Usage: $0 <dag_id> [output_dir]"
+# Hàm hiển thị cách sử dụng script
+function usage() {
+  echo "Usage: $0 --dag_id <dag_id> [--output_dir <output_dir>]"
   exit 1
+}
+
+# Gán giá trị mặc định
+OUTPUT_DIR="./dags"
+
+# Xử lý các arguments với getopts
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --dag_id)
+      DAG_ID="$2"
+      shift 2
+      ;;
+    --output_dir)
+      OUTPUT_DIR="$2"
+      shift 2
+      ;;
+    *)
+      echo "Unknown argument: $1"
+      usage
+      ;;
+  esac
+done
+
+# Kiểm tra xem DAG_ID có được cung cấp không
+if [ -z "$DAG_ID" ]; then
+  echo "Error: --dag_id is required."
+  usage
 fi
 
-DAG_ID=$1
 DAG_ID="${DAG_ID}_dag"
-OUTPUT_DIR=${2:-"./dags"}  # Default to ./dags if not provided
 FILE_NAME="${DAG_ID}.py"
 
 # Create the output directory if it doesn't exist

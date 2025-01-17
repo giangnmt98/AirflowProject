@@ -5,8 +5,6 @@ Module for setting up and executing a package environment using a bash script.
 import os
 import tempfile
 
-from airflowproject.utils.ultis import load_yaml_config
-
 
 class JobCreator:
     """
@@ -112,11 +110,23 @@ class JobCreator:
     separator
 
     # Step 1: Get the package from the git repository
+        # Get the directory name from the git URL
+    repo_dir=$(basename {self.repo_url} .git)
+    echo -e "${{YELLOW}}Repository directory: ${{NC}}${{BLUE}}$repo_dir${{NC}}"
+    echo -e "${{YELLOW}}Cloning repository...${{NC}}"
+
+    # Check if the directory exists
+    if [ -d "$repo_dir" ]; then
+      echo -e "${{YELLOW}}Directory '$repo_dir' already exists. Removing...${{NC}}"
+      rm -rf "$repo_dir" || log_error "Failed to remove existing directory '$repo_dir'."
+    fi
+    # Clone the repository
     echo -e "${{YELLOW}}Cloning repository...${{NC}}"
     git clone --branch {self.config['PACKAGE_VERSION']} --depth 1 \\
-        {self.repo_url} > /dev/null 2>&1 || 
+        {self.repo_url} > /dev/null 2>&1 ||
         log_error "
-        Failed to clone repository from '{self.repo_url}' with tag '{self.config['PACKAGE_VERSION']}'. 
+        Failed to clone repository from '{self.repo_url}' \\
+        with tag '{self.config['PACKAGE_VERSION']}'.
         Check the repository URL and network."
 
     cd {self.repo_dir} || \\
@@ -153,16 +163,17 @@ class JobCreator:
         log_error "Failed to install the package dependencies. Check 'pyproject.toml' \\
         or 'requirements.txt' for missing dependencies or errors."
     separator
-    
     # Step 3: Run the package
     echo -e "${{YELLOW}}Running the package...${{NC}}"
     config_path="{self.config['CONFIG_PATH']}"
 
     if [ -z "$config_path" ] || [ "$config_path" = "None" ]; then
-        CUDA_VISIBLE_DEVICES="{self.config['CUDA_VISIBLE_DEVICES']}" python3 main.py  || \
-        log_error "Failed to run the package '{self.config['PACKAGE_NAME']}'."
+        CUDA_VISIBLE_DEVICES="{self.config['CUDA_VISIBLE_DEVICES']}"
+         python3 main.py ||\\
+         log_error "Failed to run the package '{self.config['PACKAGE_NAME']}'."
     else
-        CUDA_VISIBLE_DEVICES="{self.config['CUDA_VISIBLE_DEVICES']}" python3 main.py --config_path "$config_path" || \
+        CUDA_VISIBLE_DEVICES="{self.config['CUDA_VISIBLE_DEVICES']}" \\
+        python3 main.py --config_path "$config_path" || \\
         log_error "Failed to run the package '{self.config['PACKAGE_NAME']}'."
     fi
     separator

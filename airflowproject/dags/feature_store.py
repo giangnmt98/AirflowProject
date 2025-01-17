@@ -1,5 +1,6 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+
 from airflowproject.configs import conf
 from airflowproject.functions.dag_functions import submit_job
 from airflowproject.functions.task_failure_callback import handle_failure_task

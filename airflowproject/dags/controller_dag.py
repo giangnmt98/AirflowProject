@@ -158,7 +158,6 @@ def trigger_dag_tasks(**context):
         raise Exception(f"The following DAGs failed: {', '.join(failed_dags)}")
 
 
-
 # DAG Definition
 
 with DAG(
