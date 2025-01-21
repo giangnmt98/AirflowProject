@@ -1,3 +1,85 @@
+#!/bin/bash
+
+# Hàm hiển thị cách sử dụng script
+function usage() {
+  echo "Usage: $0 --scenario_path <scenario_path> [--output_dir <output_dir>]"
+  exit 1
+}
+
+# Gán giá trị mặc định
+OUTPUT_DIR="./dags"
+CONTROLLER_ID=""
+# Xử lý các arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --scenario_path)
+      SCENARIO_PATH="$2"
+      shift 2
+      ;;
+    --output_dir)
+      OUTPUT_DIR="$2"
+      shift 2
+      ;;
+    *)
+      echo "Unknown argument: $1"
+      usage
+      ;;
+  esac
+done
+
+# Kiểm tra xem SCENARIO_PATH có được cung cấp không
+if [ -z "$SCENARIO_PATH" ]; then
+  echo "Error: --scenario_path is required."
+  usage
+fi
+
+# Tạo thư mục output nếu chưa tồn tại
+mkdir -p "$OUTPUT_DIR"
+
+# Hàm đọc file YAML và trích xuất thông tin
+function extract_yaml_info() {
+    python3 << EOF
+import yaml
+import json
+
+with open("$SCENARIO_PATH", "r") as file:
+    try:
+        data = yaml.safe_load(file)
+    except Exception as e:
+        print(f"Failed to parse YAML file: {e}")
+        exit(1)
+
+# Xuất thông tin Controller DAG
+controller_dag = data.get("controller_dag", {})
+sub_dags = controller_dag.get("sub_dags", {})
+
+print(json.dumps({
+    "controller_dag": controller_dag,
+    "sub_dags": sub_dags
+}, indent=2))
+EOF
+}
+
+# Hàm tạo Controller DAG
+function create_controller_dag() {
+    local CONTROLLER_INFO=$1
+    CONTROLLER_ID=$(echo "$CONTROLLER_INFO" | jq -r '.dag_name')  # Lấy CONTROLLER_ID từ YAML
+    if [ -z "$CONTROLLER_ID" ] || [ "$CONTROLLER_ID" == "null" ]; then
+        echo "Error: Missing 'dag_name' in 'controller_dag'."
+        exit 1
+    fi
+
+    local CONTROLLER_FILE_NAME="${CONTROLLER_ID}.py"
+    local FILE_NAME="$OUTPUT_DIR/$CONTROLLER_FILE_NAME"
+    local SCHEDULE_INTERVAL=$(echo "$CONTROLLER_INFO" | jq -r '.schedule_interval')
+    if [[ -z "$SCHEDULE_INTERVAL" || "$SCHEDULE_INTERVAL" == "null" ]]; then
+        SCHEDULE_INTERVAL="None"
+    else
+        SCHEDULE_INTERVAL="\"$SCHEDULE_INTERVAL\""
+    fi
+
+    # Tạo Controller DAG
+    cat << EOF > "$FILE_NAME"
 """
 This module defines a controller DAG for triggering other DAGs dynamically
 based on a configuration file provided at runtime. The DAG's configuration
@@ -28,7 +110,6 @@ SCHEDULE_INTERVAL_NONE = None
 MAX_ACTIVE_RUNS = 1
 CATCHUP = False
 
-
 @task
 def save_dag_run_config(**context):
     """
@@ -54,7 +135,6 @@ def save_dag_run_config(**context):
         # Push the config path to XCom for downstream tasks
         ti = context["ti"]
         ti.xcom_push(key=CONFIG_FILE_PATH_PARAM, value=config_file_path)
-
 
 @task
 def load_dag_configuration(**context):
@@ -91,7 +171,6 @@ def load_dag_configuration(**context):
     # Return the DAG configuration to be available via XCom
     return dag_info
 
-
 @task
 def trigger_dag_tasks(**context):
     """
@@ -120,7 +199,7 @@ def trigger_dag_tasks(**context):
     local_tz = pytz.timezone("Asia/Ho_Chi_Minh")
     failed_dags = []  # List to track failed DAGs
 
-    for scheduled_dag_id, parameters in config.items():
+    for scheduled_dag_id, parameters in config['controller_dag']['sub_dags'].items():
         execution_time = parameters.get("execution_time")
         try:
             # Trigger DAGs dynamically based on the configuration
@@ -157,16 +236,14 @@ def trigger_dag_tasks(**context):
     if failed_dags:
         raise Exception(f"The following DAGs failed: {', '.join(failed_dags)}")
 
-
-# DAG Definition
-
 with DAG(
-    dag_id="controller_dag",
-    schedule_interval=conf.ScheduleConfig.CONTROLLER_DAG_SCHEDULE,
+    dag_id="${CONTROLLER_ID}",
+    schedule_interval=${SCHEDULE_INTERVAL},
     start_date=days_ago(1),
     catchup=False,
     max_active_runs=1,
-    params={CONFIG_FILE_PATH_PARAM: None},
+    tags=TAGS_CONTROLLER,
+    params={CONFIG_FILE_PATH_PARAM: "$SCENARIO_PATH"},
 ) as dag:
     # Dummy start task
     start_task = DummyOperator(task_id="start")
@@ -178,3 +255,62 @@ with DAG(
     trigger_tasks_task = trigger_dag_tasks()
     # Define dependencies
     start_task >> save_config_task >> load_config_task >> trigger_tasks_task
+EOF
+
+    echo -e "\e[32mController DAG created: $FILE_NAME\e[0m"
+}
+
+# Hàm tạo các sub-DAGs dựa trên logic từ create_airflow_dag.sh
+function create_sub_dags() {
+    local SUB_DAGS_INFO=$1
+    local SUB_DAGS=$(echo "$SUB_DAGS_INFO" | jq -r 'keys[]')
+
+    for SUB_DAG in $SUB_DAGS; do
+        local CONFIG=$(echo "$SUB_DAGS_INFO" | jq -r ".[\"$SUB_DAG\"]")
+        local GIT_URL=$(echo "$CONFIG" | jq -r '.params.package.RAW_REPO_URL')
+        local FILE_NAME="${SUB_DAG}.py"
+        local FULL_PATH="$OUTPUT_DIR/$FILE_NAME"
+        local PACKAGE_NAME=$(basename -s .git "$GIT_URL")
+
+        # Tạo sub-DAG
+        cat << EOL > "$FULL_PATH"
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from airflowproject.configs import conf
+from airflowproject.functions.dag_functions import submit_job
+from airflowproject.functions.task_failure_callback import handle_failure_task
+
+# Define DAG configurations and metadata
+dag_id = "${SUB_DAG}"
+default_args = conf.RuntimeConfig.DEFAULT_ARGS
+schedule_interval = None
+catchup = False  # Prevent running missed executions
+
+# Define the DAG using context manager for readability
+with DAG(
+    dag_id=dag_id,
+    default_args=default_args,
+    schedule_interval=schedule_interval,
+    catchup=catchup,
+    tags = ["subdag of ${CONTROLLER_ID}"]
+) as dag:
+    # Define the task with clear structure
+    ${PACKAGE_NAME}_task = PythonOperator(
+        task_id="${PACKAGE_NAME}_task",
+        python_callable=submit_job,
+        on_failure_callback=handle_failure_task,
+    )
+EOL
+
+        echo -e "\e[32mGenerated sub-DAG: $FULL_PATH\e[0m"
+    done
+}
+
+# Lấy thông tin từ YAML
+PARSED_YAML=$(extract_yaml_info)
+CONTROLLER_DAG_INFO=$(echo "$PARSED_YAML" | jq '.controller_dag')
+SUB_DAGS_INFO=$(echo "$PARSED_YAML" | jq '.sub_dags')
+
+# Tạo Controller DAG và sub-DAGs
+create_controller_dag "$CONTROLLER_DAG_INFO"
+create_sub_dags "$SUB_DAGS_INFO"

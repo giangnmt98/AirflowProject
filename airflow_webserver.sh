@@ -21,4 +21,4 @@ export AIRFLOW_HOME=./airflowproject
 # Set the configuration file path for the custom app
 export AIRFLOW_CONFIG=$AIRFLOW_HOME/configs/airflow.cfg
 # RUn Airflow webserver
-airflow webserver -p 8080
+airflow webserver -p 8081

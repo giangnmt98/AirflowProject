@@ -2,7 +2,7 @@
 
 # Hàm hiển thị cách sử dụng script
 function usage() {
-  echo "Usage: $0 --dag_id <dag_id> [--output_dir <output_dir>]"
+  echo "Usage: $0 --dag_id <dag_id> --scenario_path <scenario_path> [--output_dir <output_dir>]"
   exit 1
 }
 
@@ -14,6 +14,10 @@ while [[ $# -gt 0 ]]; do
   case $1 in
     --dag_id)
       DAG_ID="$2"
+      shift 2
+      ;;
+    --scenario_path)
+      SCENARIO_PATH="$2"
       shift 2
       ;;
     --output_dir)
@@ -35,6 +39,9 @@ fi
 
 DAG_ID="${DAG_ID}_dag"
 FILE_NAME="${DAG_ID}.py"
+SCENARIO_PATH="${SCENARIO_PATH}"
+
+echo "Scenario File Path is: $SCENARIO_PATH"
 
 # Create the output directory if it doesn't exist
 mkdir -p $OUTPUT_DIR
@@ -205,7 +212,7 @@ with DAG(
     start_date=days_ago(1),
     catchup=False,
     max_active_runs=1,
-    params={CONFIG_FILE_PATH_PARAM: None},
+    params={CONFIG_FILE_PATH_PARAM: "$SCENARIO_PATH"},
 ) as dag:
     # Dummy start task
     start_task = DummyOperator(task_id="start")

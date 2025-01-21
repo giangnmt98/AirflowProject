@@ -137,7 +137,7 @@ SSH_CONFIG_FILE="$HOME/.ssh/config"
 if ! grep -q "${DEPLOY_KEY_PATH}" "$SSH_CONFIG_FILE" 2>/dev/null; then
     cat <<-EOF >> "$SSH_CONFIG_FILE"
 
-Host github.com-${REPO_NAME}
+Host github-${REPO_NAME}
     HostName github.com
     User git
     IdentityFile ${DEPLOY_KEY_PATH}
