@@ -7,7 +7,7 @@ controller_dag:
       params:
         package:
           PACKAGE_NAME: "featurestore"
-          CONFIG_PATH: "/home/giang/Desktop/config.yaml"
+          CONFIG_PATH:
           VENV_HUB_PATH: "/home/giang/VENV/"
           RAW_REPO_URL: "git@github-test-mytv-feature-store:giangnmt98/feature_store.git"
           PACKAGE_VERSION: "v1.0"
