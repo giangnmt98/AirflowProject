@@ -1,14 +1,13 @@
 controller_dag:
   dag_name: "mytv_controller_dag"
-  schedule_interval:
+  schedule_interval: "@daily"
   sub_dags:
     feature_store_dag:
-      schedule_interval:
       execution_time:
       params:
         package:
           PACKAGE_NAME: "featurestore"
-          CONFIG_PATH:
+          CONFIG_PATH: "/home/giang/Desktop/config.yaml"
           VENV_HUB_PATH: "/home/giang/VENV/"
           RAW_REPO_URL: "git@github-test-mytv-feature-store:giangnmt98/feature_store.git"
           PACKAGE_VERSION: "v1.0"
@@ -23,7 +22,6 @@ controller_dag:
           retry_delay: 30
 
     recmodel_dag:
-      schedule_interval:
       execution_time:
       params:
         package:
