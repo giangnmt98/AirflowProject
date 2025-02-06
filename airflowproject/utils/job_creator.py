@@ -113,8 +113,6 @@ class JobCreator:
         # Get the directory name from the git URL
     repo_dir=$(basename {self.repo_url} .git)
     echo -e "${{YELLOW}}Repository directory: ${{NC}}${{BLUE}}$repo_dir${{NC}}"
-    echo -e "${{YELLOW}}Cloning repository...${{NC}}"
-
     # Check if the directory exists
     if [ -d "$repo_dir" ]; then
       echo -e "${{YELLOW}}Directory '$repo_dir' already exists. Removing...${{NC}}"
