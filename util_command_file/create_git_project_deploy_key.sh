@@ -157,4 +157,4 @@ ssh-add "${DEPLOY_KEY_PATH}"
 # Completion message
 echo -e "${COLOR_GREEN}Deploy Key đã được thêm vào SSH Agent, có thể kiểm tra bằng lệnh 'ssh-add -l'.${COLOR_RESET}"
 echo -e "${COLOR_GREEN}Bây giờ đã có thể clone hoặc pull repository của mình bằng Deploy Key!${COLOR_RESET}"
-echo -e "${COLOR_YELLOW}Thực thi lệnh sau để clone repository: git clone git@github.com-${REPO_NAME}:${REPO_OWNER}/${REPO_NAME}.git${COLOR_RESET}"
+echo -e "${COLOR_YELLOW}Thực thi lệnh sau để clone repository: git clone git@github-${REPO_NAME}:${REPO_OWNER}/${REPO_NAME}.git${COLOR_RESET}"

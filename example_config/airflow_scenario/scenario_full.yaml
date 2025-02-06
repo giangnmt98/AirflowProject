@@ -1,6 +1,6 @@
 controller_dag:
   dag_name: "mytv_controller_dag"
-  schedule_interval: "@daily"
+  schedule_interval:
   sub_dags:
     feature_store_dag:
       execution_time:
