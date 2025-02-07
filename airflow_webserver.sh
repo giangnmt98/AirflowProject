@@ -12,13 +12,13 @@ export MYSQL_HOST=localhost
 # Set the database port for MYSQL Database
 export MYSQL_PORT=3306
 # Set the database name for MYSQL Database
-export MYSQL_DATABASE=mytv_dashboard
+export MYSQL_DATABASE=mytv_dashboard_test
 # Set the database name for Airflow database in MySQL
-export MYSQL_AIRFLOW_DATABASE=airflowdb
+export MYSQL_AIRFLOW_DATABASE=airflowdb_test
 
 # Set the home directory for the custom app
 export AIRFLOW_HOME=./airflowproject
 # Set the configuration file path for the custom app
 export AIRFLOW_CONFIG=$AIRFLOW_HOME/configs/airflow.cfg
-# RUn Airflow webserver
-airflow webserver -p 8081
+# Run Airflow webserver
+airflow webserver -p 8085

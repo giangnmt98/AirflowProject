@@ -18,7 +18,7 @@ export MYSQL_HOST=localhost
 export MYSQL_PORT=3306
 
 # Set the database name for MYSQL Database
-export MYSQL_DATABASE=mytv_dashboard
+export MYSQL_DATABASE=mytv_dashboard_test
 
 # Set the database name for Airflow database in MySQL
-export MYSQL_AIRFLOW_DATABASE=airflowdb
+export MYSQL_AIRFLOW_DATABASE=airflowdb_test

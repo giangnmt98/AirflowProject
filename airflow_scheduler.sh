@@ -7,13 +7,13 @@ export MYSQL_USER=root
 # Set the database password for MYSQL Database
 export MYSQL_PASSWORD=DsteamIC2024
 # Set the database host for MYSQL Database
-export MYSQL_HOST=localhost
+export MYSQL_HOST=0.0.0.0
 # Set the database port for MYSQL Database
 export MYSQL_PORT=3306
 # Set the database name for MYSQL Database
-export MYSQL_DATABASE=mytv_dashboard
+export MYSQL_DATABASE=mytv_dashboard_test
 # Set the database name for Airflow database in MySQL
-export MYSQL_AIRFLOW_DATABASE=airflowdb
+export MYSQL_AIRFLOW_DATABASE=airflowdb_test
 
 # Set the home directory for the custom app
 export AIRFLOW_HOME=./airflowproject
@@ -21,7 +21,8 @@ export AIRFLOW_HOME=./airflowproject
 export AIRFLOW_CONFIG=$AIRFLOW_HOME/configs/airflow.cfg
 
 export REDIS_PASSWORD=DsteamIC2024
-
+export JAVA_HOME="/home/cuongit/BIGDATA/miniconda3/envs/py39"
+export MYSQL_MLFLOW_DATABASE=mlflow
 # Run Airflow scheduler
 airflow scheduler
 
