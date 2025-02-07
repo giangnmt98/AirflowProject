@@ -3,20 +3,19 @@ controller_dag:
   schedule_interval:
   sub_dags:
     feature_store_dag:
-      schedule_interval:
       execution_time:
       params:
         package:
           PACKAGE_NAME: "featurestore"
-          CONFIG_PATH:
-          VENV_HUB_PATH: "/home/giang/VENV/"
-          RAW_REPO_URL: "git@github-test-mytv-feature-store:giangnmt98/feature_store.git"
+          CONFIG_PATH: "/home/cuongit/BIGDATA/giang/test/config_hub/feature_store_config.yaml"
+          VENV_HUB_PATH: "/home/cuongit/BIGDATA/giang/test/venv_hub"
+          RAW_REPO_URL: "git@github-feature_store:giangnmt98/feature_store.git"
           PACKAGE_VERSION: "v1.0"
           PYTHON_VERSION: "3.9"
           CUDA_VISIBLE_DEVICES: ""
       task_failure_callback:
         notify:
-          TELEGRAM_CHAT_ID: "-4569060205"
+          TELEGRAM_CHAT_ID: "2032100419"
           TELEGRAM_TOKEN: "7897102108:AAEm888B6NUD4zRvlNfmvSCzNC94955cevg"
         retry_task:
           retries: 0

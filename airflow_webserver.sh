@@ -8,7 +8,7 @@ export MYSQL_USER=root
 # Set the database password for MYSQL Database
 export MYSQL_PASSWORD=DsteamIC2024
 # Set the database host for MYSQL Database
-export MYSQL_HOST=localhost
+export MYSQL_HOST=0.0.0.0
 # Set the database port for MYSQL Database
 export MYSQL_PORT=3306
 # Set the database name for MYSQL Database
